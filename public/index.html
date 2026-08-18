@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Microservice Incident Impact Mapper</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🚨 Incident Impact Mapper</h1>
+      <p>Analyze the blast radius of a microservice or database failure.</p>
+    </header>
+
+    <main>
+      <div class="search-section">
+        <label for="service-input">Simulate Failure in Component:</label>
+        <div class="input-group">
+          <input type="text" id="service-input" placeholder="e.g. AuthService, UsersDB..." value="AuthService">
+          <button id="analyze-btn">Analyze Impact</button>
+        </div>
+      </div>
+
+      <div id="loading" class="hidden">Running graph traversal...</div>
+      <div id="error" class="hidden error-msg"></div>
+
+      <div id="results" class="hidden">
+        <h2>Blast Radius for <span id="failing-node-display" class="highlight"></span></h2>
+        
+        <table id="impact-table">
+          <thead>
+            <tr>
+              <th>Affected Component</th>
+              <th>Network Hops Away</th>
+              <th>Team to Page</th>
+            </tr>
+          </thead>
+          <tbody id="impact-tbody">
+            <!-- Results injected here -->
+          </tbody>
+        </table>
+        
+        <div class="empty-state hidden" id="no-impact">
+          No other services depend on this component. Safe to deploy!
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

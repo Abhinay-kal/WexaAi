@@ -1,0 +1,133 @@
+:root {
+  --bg-color: #f4f7f6;
+  --text-main: #333;
+  --primary-color: #2c3e50;
+  --accent-color: #e74c3c;
+  --border-color: #ddd;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 20px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+header {
+  border-bottom: 2px solid var(--border-color);
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+}
+
+h1 {
+  color: var(--primary-color);
+  margin: 0 0 10px 0;
+}
+
+.search-section {
+  background-color: #ecf0f1;
+  padding: 20px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.input-group {
+  display: flex;
+  gap: 10px;
+}
+
+input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+button {
+  background-color: var(--accent-color);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 16px;
+  transition: background-color 0.2s;
+}
+
+button:hover {
+  background-color: #c0392b;
+}
+
+.hidden {
+  display: none !important;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+th, td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+th {
+  background-color: #f8f9fa;
+  font-weight: bold;
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.team-badge {
+  background-color: #3498db;
+  color: white;
+}
+
+.highlight {
+  color: var(--accent-color);
+}
+
+.error-msg {
+  color: white;
+  background-color: var(--accent-color);
+  padding: 10px;
+  border-radius: 4px;
+  margin-top: 15px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 30px;
+  background-color: #d4edda;
+  color: #155724;
+  border-radius: 4px;
+  font-weight: bold;
+}
