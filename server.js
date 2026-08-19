@@ -60,6 +60,45 @@ app.get('/api/impact/:serviceName', async (req, res) => {
   }
 });
 
+// API Endpoint: Get the entire graph for visualization
+app.get('/api/graph', async (req, res) => {
+  const session = driver.session();
+  try {
+    const cypher = `
+      MATCH (n)
+      OPTIONAL MATCH (n)-[r]->(m)
+      RETURN n.name AS id, labels(n)[0] AS label, 
+             m.name AS target, type(r) AS type
+    `;
+    const result = await session.run(cypher);
+    
+    const nodes = new Map();
+    const edges = [];
+    
+    result.records.forEach(record => {
+      const sourceId = record.get('id');
+      const sourceLabel = record.get('label');
+      const targetId = record.get('target');
+      const edgeType = record.get('type');
+      
+      if (!nodes.has(sourceId)) {
+        nodes.set(sourceId, { id: sourceId, label: sourceId, group: sourceLabel });
+      }
+      
+      if (targetId) {
+        edges.push({ from: sourceId, to: targetId, label: edgeType });
+      }
+    });
+    
+    res.json({ nodes: Array.from(nodes.values()), edges });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to fetch graph' });
+  } finally {
+    await session.close();
+  }
+});
+
 // Graceful shutdown
 process.on('SIGINT', async () => {
   if (driver) await driver.close();

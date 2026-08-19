@@ -1,50 +1,95 @@
-document.getElementById('analyze-btn').addEventListener('click', async () => {
-  const serviceInput = document.getElementById('service-input').value.trim();
-  if (!serviceInput) return;
+let network = null;
+let nodesDataset = null;
+let edgesDataset = null;
 
-  // UI state updates
-  document.getElementById('loading').classList.remove('hidden');
-  document.getElementById('results').classList.add('hidden');
-  document.getElementById('error').classList.add('hidden');
-  document.getElementById('no-impact').classList.add('hidden');
-  
+document.addEventListener('DOMContentLoaded', async () => {
+  await initGraph();
+});
+
+async function initGraph() {
   try {
-    const response = await fetch(`/api/impact/${encodeURIComponent(serviceInput)}`);
-    const data = await response.json();
+    const res = await fetch('/api/graph');
+    const data = await res.json();
     
-    document.getElementById('loading').classList.add('hidden');
+    // Create vis.js datasets
+    nodesDataset = new vis.DataSet(data.nodes.map(n => ({
+      ...n,
+      color: { background: '#D2E5FF', border: '#2B7CE9' },
+      font: { color: '#333' }
+    })));
+    edgesDataset = new vis.DataSet(data.edges.map(e => ({
+      ...e,
+      arrows: 'to',
+      color: { color: '#848484' }
+    })));
+
+    const container = document.getElementById('network');
+    const networkData = { nodes: nodesDataset, edges: edgesDataset };
+    const options = {
+      physics: { stabilization: true },
+      nodes: { shape: 'box', margin: 10 }
+    };
+    network = new vis.Network(container, networkData, options);
+  } catch (e) {
+    console.error('Failed to load initial graph', e);
+  }
+}
+
+document.getElementById('searchBtn').addEventListener('click', async () => {
+  const serviceName = document.getElementById('serviceInput').value.trim();
+  if (!serviceName) return;
+
+  const resultsDiv = document.getElementById('results');
+  const tbody = document.querySelector('#impactTable tbody');
+  const serviceNameSpan = document.getElementById('serviceNameDisplay');
+  const errorDiv = document.getElementById('error');
+
+  errorDiv.classList.add('hidden');
+  resultsDiv.classList.add('hidden');
+  tbody.innerHTML = '';
+
+  // Reset graph colors
+  nodesDataset.forEach(node => {
+    nodesDataset.update({ id: node.id, color: { background: '#D2E5FF', border: '#2B7CE9' } });
+  });
+
+  try {
+    const res = await fetch(`/api/impact/${encodeURIComponent(serviceName)}`);
+    const data = await res.json();
+
+    if (data.error) throw new Error(data.error);
+
+    serviceNameSpan.textContent = serviceName;
     
-    if (!response.ok) {
-      throw new Error(data.error || 'Failed to analyze impact');
+    // Highlight root node
+    if (nodesDataset.get(serviceName)) {
+      nodesDataset.update({ id: serviceName, color: { background: '#FF4D4D', border: '#CC0000' } });
     }
 
-    document.getElementById('failing-node-display').textContent = data.failingService;
-    document.getElementById('results').classList.remove('hidden');
+    const affectedNodes = new Set();
     
-    const tbody = document.getElementById('impact-tbody');
-    tbody.innerHTML = '';
-    
-    if (data.impact.length === 0) {
-      document.getElementById('impact-table').classList.add('hidden');
-      document.getElementById('no-impact').classList.remove('hidden');
-    } else {
-      document.getElementById('impact-table').classList.remove('hidden');
+    data.impact.forEach(row => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${row.dependent}</td>
+        <td>${row.hops} hop(s)</td>
+        <td><span class="badge badge-${row.team.toLowerCase()}">${row.team}</span></td>
+      `;
+      tbody.appendChild(tr);
       
-      data.impact.forEach(item => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${item.affectedService}</td>
-          <td>${item.hops} hop(s)</td>
-          <td><span class="badge team-badge">${item.teamToNotify}</span></td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-    
+      affectedNodes.add(row.dependent);
+    });
+
+    // Highlight affected nodes in orange
+    affectedNodes.forEach(nodeId => {
+      if (nodesDataset.get(nodeId)) {
+        nodesDataset.update({ id: nodeId, color: { background: '#FFA500', border: '#CC8400' } });
+      }
+    });
+
+    resultsDiv.classList.remove('hidden');
   } catch (err) {
-    document.getElementById('loading').classList.add('hidden');
-    const errorEl = document.getElementById('error');
-    errorEl.textContent = err.message;
-    errorEl.classList.remove('hidden');
+    errorDiv.textContent = err.message;
+    errorDiv.classList.remove('hidden');
   }
 });
