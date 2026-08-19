@@ -58,14 +58,16 @@ async function initGraph() {
   }
 }
 
-document.getElementById('searchBtn').addEventListener('click', async () => {
-  const serviceName = document.getElementById('serviceInput').value.trim();
+document.getElementById('analyze-btn').addEventListener('click', async () => {
+  const serviceName = document.getElementById('service-input').value.trim();
   if (!serviceName) return;
 
   const resultsDiv = document.getElementById('results');
-  const tbody = document.querySelector('#impactTable tbody');
-  const serviceNameSpan = document.getElementById('serviceNameDisplay');
+  const tbody = document.getElementById('impact-tbody');
+  const serviceNameSpan = document.getElementById('failing-node-display');
   const errorDiv = document.getElementById('error');
+  const noImpactDiv = document.getElementById('no-impact');
+  const impactTable = document.getElementById('impact-table');
 
   errorDiv.classList.add('hidden');
   resultsDiv.classList.add('hidden');
@@ -91,17 +93,25 @@ document.getElementById('searchBtn').addEventListener('click', async () => {
 
     const affectedNodes = new Set();
     
-    data.impact.forEach(row => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${row.dependent}</td>
-        <td>${row.hops} hop(s)</td>
-        <td><span class="badge badge-${row.team.toLowerCase()}">${row.team}</span></td>
-      `;
-      tbody.appendChild(tr);
-      
-      affectedNodes.add(row.dependent);
-    });
+    if (data.impact.length === 0) {
+      impactTable.classList.add('hidden');
+      noImpactDiv.classList.remove('hidden');
+    } else {
+      impactTable.classList.remove('hidden');
+      noImpactDiv.classList.add('hidden');
+
+      data.impact.forEach(row => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${row.dependent}</td>
+          <td>${row.hops} hop(s)</td>
+          <td><span class="badge badge-${row.team.toLowerCase()}">${row.team}</span></td>
+        `;
+        tbody.appendChild(tr);
+        
+        affectedNodes.add(row.dependent);
+      });
+    }
 
     // Highlight affected nodes in orange
     affectedNodes.forEach(nodeId => {
