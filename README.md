@@ -65,3 +65,19 @@ ORDER BY hops ASC
 **Why is this awkward in SQL?**
 The `*` in `-[:CALLS|READS_FROM*]->` tells the graph database to traverse *any number of hops* (1 to infinity). SQL does not handle variable-depth recursive queries elegantly without complex Common Table Expressions (WITH RECURSIVE), which are slow and hard to maintain.
 
+
+## 5. System Architecture
+```mermaid
+graph LR
+    A[Client Browser] -->|HTTP GET /api/graph| B(Node.js / Express Server)
+    A -->|HTTP GET /api/impact| B
+    B -->|Bolt Protocol / Cypher| C[(CognoDB / Neo4j Aura)]
+    
+    style A fill:#D2E5FF,stroke:#2B7CE9
+    style B fill:#E2F0D9,stroke:#548235
+    style C fill:#FFE699,stroke:#BF8F00
+```
+
+## 6. UI Demo
+*(See the interactive visual graph in action)*
+![Impact Mapper Demo](assets/demo.png)
