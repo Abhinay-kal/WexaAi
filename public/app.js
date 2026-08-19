@@ -26,8 +26,31 @@ async function initGraph() {
     const container = document.getElementById('network');
     const networkData = { nodes: nodesDataset, edges: edgesDataset };
     const options = {
-      physics: { stabilization: true },
-      nodes: { shape: 'box', margin: 10 }
+      physics: {
+        solver: 'forceAtlas2Based',
+        forceAtlas2Based: {
+          gravitationalConstant: -150,
+          centralGravity: 0.01,
+          springLength: 200,
+          springConstant: 0.05
+        },
+        stabilization: { iterations: 150 }
+      },
+      layout: {
+        randomSeed: 42
+      },
+      edges: {
+        smooth: { type: 'continuous' },
+        font: { size: 12, color: '#888', background: '#fafafa', strokeWidth: 0 },
+        width: 1.5
+      },
+      nodes: {
+        shape: 'box',
+        margin: { top: 10, bottom: 10, left: 15, right: 15 },
+        font: { size: 14, face: 'sans-serif' },
+        borderWidth: 2,
+        shadow: { enabled: true, color: 'rgba(0,0,0,0.1)', size: 5, x: 2, y: 2 }
+      }
     };
     network = new vis.Network(container, networkData, options);
   } catch (e) {
