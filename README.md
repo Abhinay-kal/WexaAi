@@ -22,7 +22,6 @@ The model consists of 3 Node Labels and 3 Relationship Types:
 - `(Service)-[:READS_FROM | :WRITES_TO]->(Database)`
 - `(Team)-[:MAINTAINS]->(Service | Database)`
 
-*(A visual diagram can be imagined as nodes of Services pointing to other Services and Databases, with Teams pointing to the resources they maintain).*
 
 ## 3. Setup and Run Instructions
 
@@ -66,5 +65,3 @@ ORDER BY hops ASC
 **Why is this awkward in SQL?**
 The `*` in `-[:CALLS|READS_FROM*]->` tells the graph database to traverse *any number of hops* (1 to infinity). SQL does not handle variable-depth recursive queries elegantly without complex Common Table Expressions (WITH RECURSIVE), which are slow and hard to maintain.
 
-## 5. UI Screenshots
-*(Take screenshots of the working app and place them here)*
