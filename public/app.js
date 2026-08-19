@@ -100,7 +100,14 @@ document.getElementById('analyze-btn').addEventListener('click', async () => {
       impactTable.classList.remove('hidden');
       noImpactDiv.classList.add('hidden');
 
+      const seenRows = new Set();
+      
       data.impact.forEach(row => {
+        // Prevent duplicate rows in the table
+        const rowKey = `${row.affectedService}-${row.teamToNotify}-${row.hops}`;
+        if (seenRows.has(rowKey)) return;
+        seenRows.add(rowKey);
+        
         const tr = document.createElement('tr');
         const teamName = row.teamToNotify || 'Unknown';
         tr.innerHTML = `
