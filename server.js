@@ -37,7 +37,7 @@ app.get('/api/impact/:serviceName', async (req, res) => {
     // Cypher query: Find all services that depend (directly or indirectly) on the failing service
     // and the teams that maintain them.
     const cypher = `
-      MATCH path = (dependent:Service)-[:CALLS|READS_FROM*]->(failing:Service {name: $serviceName})
+      MATCH path = (dependent:Service)-[:CALLS|READS_FROM|WRITES_TO*]->(failing {name: $serviceName})
       MATCH (team:Team)-[:MAINTAINS]->(dependent)
       RETURN dependent.name AS affectedService, team.name AS teamToNotify, length(path) AS hops
       ORDER BY hops ASC
