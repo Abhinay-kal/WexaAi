@@ -102,14 +102,15 @@ document.getElementById('analyze-btn').addEventListener('click', async () => {
 
       data.impact.forEach(row => {
         const tr = document.createElement('tr');
+        const teamName = row.teamToNotify || 'Unknown';
         tr.innerHTML = `
-          <td>${row.dependent}</td>
+          <td>${row.affectedService}</td>
           <td>${row.hops} hop(s)</td>
-          <td><span class="badge badge-${row.team.toLowerCase()}">${row.team}</span></td>
+          <td><span class="badge badge-${teamName.toLowerCase()}">${teamName}</span></td>
         `;
         tbody.appendChild(tr);
         
-        affectedNodes.add(row.dependent);
+        affectedNodes.add(row.affectedService);
       });
     }
 
